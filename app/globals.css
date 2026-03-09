@@ -1,0 +1,41 @@
+@import "tailwindcss";
+
+:root {
+  --bg-dark: #0d1f0d;
+  --bg-card: #1a2f1a;
+  --bg-card2: #223322;
+  --green-deep: #2d5a27;
+  --green-mid: #4a7c3f;
+  --green-light: #6db85c;
+  --gold: #c8a84b;
+  --gold-light: #e8c66a;
+  --teal: #2a7a8a;
+  --teal-light: #3aabbd;
+  --text-primary: #e8f0e8;
+  --text-secondary: #a8c0a8;
+  --text-muted: #6a8a6a;
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  background: var(--bg-dark);
+  color: var(--text-primary);
+  font-family: Georgia, "Times New Roman", serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+#__next,
+main {
+  height: 100%;
+}
