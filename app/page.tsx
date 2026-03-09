@@ -48,12 +48,23 @@ function calcScore(value: number, zoneMid: number, zoneHalf: number): number {
 
 // ─── Grade ───────────────────────────────────────────────────────────────────
 
-type Grade = "perfect" | "good" | "stress" | "severe";
+
+type Grade =
+  | "legendary"
+  | "excellent"
+  | "good"
+  | "normal"
+  | "stress"
+  | "bad"
+  | "severe";
 
 function getGrade(avg: number): Grade {
-  if (avg >= 90) return "perfect";
+  if (avg >= 95) return "legendary";
+  if (avg >= 85) return "excellent";
   if (avg >= 70) return "good";
+  if (avg >= 55) return "normal";
   if (avg >= 40) return "stress";
+  if (avg >= 25) return "bad";
   return "severe";
 }
 
@@ -61,63 +72,83 @@ const GRADE_INFO: Record<
   Grade,
   { ko: string; en: string; color: string; treatment: string; desc_ko: string; desc_en: string }
 > = {
-  perfect: {
-    ko: "완벽한 생장",
-    en: "Optimal Growth",
+  legendary: {
+    ko: "전설적인 생장",
+    en: "Legendary Growth",
+    color: "#2ecc71",
+    treatment: "M1 (-15 cm) 완벽 유지",
+    desc_ko: "지하수위를 거의 완벽하게 맞췄습니다! 타마누가 폭발적으로 성장하여 거대한 나무로 자랐습니다.",
+    desc_en: "You maintained a nearly perfect groundwater level! The tree grew explosively into a legendary giant.",
+  },
+  excellent: {
+    ko: "탁월한 생장",
+    en: "Excellent Growth",
     color: "#6db85c",
     treatment: "M1 (-15 cm) 수준",
-    desc_ko:
-      "지하수위 -40~-15 cm 범위를 완벽하게 유지했습니다. 실험에서 M1(-15 cm) 처리구는 수고·잎수·근원경이 대조군(M0)과 통계적으로 유의한 차이를 보이지 않아 타마누 생장의 최적 조건으로 확인되었습니다.",
-    desc_en:
-      "You maintained the optimal groundwater level of -40 to -15 cm. In the experiment, M1 (-15 cm) showed no statistically significant difference from the control (M0) in height, leaf count, or basal diameter — confirming ideal growth conditions for Calophyllum inophyllum.",
+    desc_ko: "최적에 가까운 지하수위로 타마누가 매우 건강하게 성장했습니다.",
+    desc_en: "The tree grew very healthily with near-optimal groundwater management.",
   },
   good: {
     ko: "양호한 생장",
     en: "Good Growth",
     color: "#c8a84b",
     treatment: "M0–M2 범위",
-    desc_ko:
-      "적절한 지하수위를 대체로 유지했습니다. M0(대조군)·M1(-15 cm)·M2(-10 cm) 처리구는 모두 100% 생존율을 보이며 양호한 생장을 나타냈습니다. 이탄지 훼손 방지와 생장 균형을 잘 맞췄습니다.",
-    desc_en:
-      "You mostly maintained appropriate groundwater levels. M0, M1 (-15 cm), and M2 (-10 cm) treatments all showed 100% survival rate with good growth. You balanced peatland protection and seedling development well.",
+    desc_ko: "적절한 지하수위로 양호한 생장을 보였습니다.",
+    desc_en: "Good growth with generally appropriate groundwater levels.",
+  },
+  normal: {
+    ko: "보통 생장",
+    en: "Normal Growth",
+    color: "#b0b85c",
+    treatment: "M2 수준",
+    desc_ko: "평균적인 지하수위 관리로 무난한 생장입니다.",
+    desc_en: "Average growth with moderate groundwater management.",
   },
   stress: {
     ko: "스트레스 생장",
     en: "Stressed Growth",
     color: "#e08a4a",
     treatment: "M3 (-5 cm) 수준",
-    desc_ko:
-      "지하수위가 지나치게 높거나 낮아 생장 스트레스가 발생했습니다. M3(-5 cm) 처리구에서는 수고와 잎수가 유의하게 감소(p<0.05)했습니다. 지하수위 관리가 보다 세밀하게 필요합니다.",
-    desc_en:
-      "Groundwater level was too high or too low, causing growth stress. The M3 (-5 cm) treatment showed significantly reduced height and leaf count (p<0.05). More precise water table management is needed.",
+    desc_ko: "지하수위가 다소 불안정해 스트레스를 받았습니다.",
+    desc_en: "Growth stress due to somewhat unstable groundwater levels.",
+  },
+  bad: {
+    ko: "불량 생장",
+    en: "Poor Growth",
+    color: "#e05c4a",
+    treatment: "M3~M4 수준",
+    desc_ko: "지하수위 관리 실패로 생장이 저조합니다.",
+    desc_en: "Poor growth due to failed groundwater management.",
   },
   severe: {
     ko: "심각한 영향",
     en: "Severe Impact",
     color: "#c94f4f",
     treatment: "M4 (0 cm) 수준",
-    desc_ko:
-      "지하수위가 지면에 가깝거나 범람 수준으로 타마누가 심각한 스트레스를 받았습니다. M4(0 cm) 처리구에서는 수고·잎수·근원경 모두 유의하게 감소했으며(p<0.05), 과습 환경이 타마누 생장에 가장 부정적인 영향을 미쳤습니다.",
-    desc_en:
-      "Groundwater was near or above ground level, severely stressing the seedlings. The M4 (0 cm) treatment showed significantly reduced height, leaf count, and basal diameter (p<0.05) — waterlogging had the most negative impact on Calophyllum inophyllum growth.",
+    desc_ko: "지하수위가 극단적으로 잘못되어 타마누가 거의 죽음 직전입니다.",
+    desc_en: "Severely negative impact, the tree is near death due to extreme groundwater mismanagement.",
   },
 };
 
 // ─── SVG Tamanu Seedling ──────────────────────────────────────────────────────
 
 function TamanuSeedling({ score }: { score: number }) {
-  const stage = Math.min(4, Math.floor(score / 130));
-  const trunkHeight = 30 + stage * 12;
+  // 0~6단계(7단계)로 stage 세분화, 0:묘목~6:거대한 나무
+  const stage = Math.min(6, Math.floor(score / 120));
+  const trunkHeight = 30 + stage * 14;
   const leafPairs = 1 + stage;
   const cx = 60;
   const baseY = 140;
   const trunkTop = baseY - trunkHeight;
-  const leafColor = score < 200 ? "#4a7c3f" : "#6db85c";
+  // 점수에 따라 잎 색상, 나무 굵기, 열매 등 추가 효과
+  const leafColor = stage >= 5 ? "#2ecc71" : stage >= 3 ? "#6db85c" : "#4a7c3f";
+  const trunkColor = stage >= 5 ? "#3e2c1a" : "#6b4c2a";
+  const fruitColor = stage === 6 ? "#f5c842" : undefined;
 
   const leaves: React.ReactNode[] = [];
   for (let i = 0; i < leafPairs; i++) {
     const y = trunkTop + i * (trunkHeight / (leafPairs + 0.5));
-    const size = 10 + stage * 2 - i * 1.5;
+    const size = 10 + stage * 2.5 - i * 1.2;
     leaves.push(
       <ellipse key={`l${i}`} cx={cx - size * 0.8} cy={y} rx={size} ry={size * 0.45}
         fill={leafColor} opacity={0.9} transform={`rotate(-25, ${cx - size * 0.8}, ${y})`} />,
@@ -125,17 +156,27 @@ function TamanuSeedling({ score }: { score: number }) {
         fill={leafColor} opacity={0.9} transform={`rotate(25, ${cx + size * 0.8}, ${y})`} />
     );
   }
+  // 꼭대기 잎
   leaves.push(
-    <ellipse key="top" cx={cx} cy={trunkTop - 8} rx={10 + stage * 2} ry={6 + stage}
+    <ellipse key="top" cx={cx} cy={trunkTop - 8} rx={12 + stage * 2} ry={7 + stage}
       fill={leafColor} opacity={0.95} />
   );
+  // stage 6(최고점)에는 열매 추가
+  const fruits = stage === 6
+    ? [
+        <circle key="fruit1" cx={cx - 18} cy={trunkTop + 18} r={5} fill={fruitColor} opacity={0.85} />,
+        <circle key="fruit2" cx={cx + 16} cy={trunkTop + 22} r={4} fill={fruitColor} opacity={0.7} />,
+        <circle key="fruit3" cx={cx} cy={trunkTop + 8} r={4.5} fill={fruitColor} opacity={0.8} />,
+      ]
+    : null;
 
   return (
     <svg viewBox="0 0 120 160" className="w-full h-full" aria-label="타마누 묘목">
       <rect x={38} y={baseY} width={44} height={16} rx={3} fill="#7a5c3a" />
       <rect x={34} y={baseY - 2} width={52} height={7} rx={2} fill="#8a6c4a" />
-      <rect x={cx - 4} y={trunkTop} width={8} height={trunkHeight} rx={3} fill="#6b4c2a" />
+      <rect x={cx - (stage >= 5 ? 7 : 4)} y={trunkTop} width={stage >= 5 ? 14 : 8} height={trunkHeight} rx={stage >= 5 ? 5 : 3} fill={trunkColor} />
       {leaves}
+      {fruits}
     </svg>
   );
 }
