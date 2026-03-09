@@ -476,7 +476,7 @@ export default function Page() {
           <ul style={{ color: "#e8f0e8", fontSize: "13px", lineHeight: 1.7, listStyle: "none", padding: 0 }}>
             <li>· 세로 게이지가 위아래로 움직입니다</li>
             <li>· <span style={{ color: "#6db85c", fontWeight: "bold" }}>초록 구간</span>에 금색 인디케이터가 오면 화면을 탭하세요</li>
-            <li>· 4라운드, 건기와 우기를 교대로 진행</li>
+            <li>· 8라운드, 건기와 우기를 교대로 진행</li>
             <li>· 중심에 가까울수록 높은 점수 (최대 100점)</li>
           </ul>
           <div style={{ display: "flex", justifyContent: "center", gap: "20px", marginTop: "10px" }}>
