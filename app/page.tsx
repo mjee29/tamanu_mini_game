@@ -60,11 +60,11 @@ type Grade =
 
 function getGrade(avg: number): Grade {
   if (avg >= 95) return "legendary";
-  if (avg >= 85) return "excellent";
-  if (avg >= 70) return "good";
-  if (avg >= 55) return "normal";
-  if (avg >= 40) return "stress";
-  if (avg >= 25) return "bad";
+  if (avg >= 90) return "excellent";
+  if (avg >= 85) return "good";
+  if (avg >= 80) return "normal";
+  if (avg >= 70) return "stress";
+  if (avg >= 50) return "bad";
   return "severe";
 }
 
@@ -349,6 +349,7 @@ export default function Page() {
   const [frozen, setFrozen] = useState(false);
   const [flashScore, setFlashScore] = useState<number | null>(null);
   const [showResearch, setShowResearch] = useState(false);
+  const [countdown, setCountdown] = useState<number | null>(null);
 
   const animRef = useRef<number | null>(null);
   const gaugeRef = useRef(-100);
@@ -410,6 +411,8 @@ export default function Page() {
   zoneMaxRef.current = zoneMax;
 
   const handleAction = useCallback(() => {
+    if (countdown !== null) return;
+
     if (screen === "intro") {
       // Reset all state
       setRound(0);
@@ -419,8 +422,9 @@ export default function Page() {
       setGaugeValue(startVal);
       gaugeRef.current = startVal;
       dirRef.current = 1;
-      setFrozen(false);
-      frozenRef.current = false;
+      setFrozen(true);
+      frozenRef.current = true;
+      setCountdown(3);
       setScreen("game");
       return;
     }
@@ -428,6 +432,7 @@ export default function Page() {
     if (screen === "result") {
       setScreen("intro");
       setShowResearch(false);
+      setCountdown(null);
       return;
     }
 
@@ -479,6 +484,23 @@ export default function Page() {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [handleAction]);
+
+  // Countdown before game starts
+  useEffect(() => {
+    if (countdown === null) return;
+
+    if (countdown === 0) {
+      const id = window.setTimeout(() => {
+        setCountdown(null);
+        setFrozen(false);
+        frozenRef.current = false;
+      }, 1000);
+      return () => window.clearTimeout(id);
+    }
+
+    const id = window.setTimeout(() => setCountdown((c) => (c === null ? null : c - 1)), 1000);
+    return () => window.clearTimeout(id);
+  }, [countdown]);
 
   const totalScore = results.reduce((s, r) => s + r.score, 0);
   const avgScore = results.length > 0 ? Math.round(totalScore / results.length) : 0;
@@ -641,6 +663,27 @@ export default function Page() {
 
           {/* Seedling + UI */}
           <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", position: "relative" }}>
+            {/* Countdown overlay */}
+            {countdown !== null && (
+              <div
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  zIndex: 30,
+                  pointerEvents: "none",
+                }}
+              >
+                <div style={{ textAlign: "center" }}>
+                  <div style={{ color: "#e8f0e8", fontSize: "72px", fontWeight: "900", lineHeight: 1, textShadow: "0 4px 20px rgba(0,0,0,0.8)" }}>
+                    {countdown === 0 ? "시작!" : countdown}
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Flash score */}
             {flashScore !== null && (
               <div
